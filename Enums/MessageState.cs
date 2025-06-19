@@ -2,6 +2,7 @@
 {
     public enum MessageState
     {
+        Created,
         Sent,
         Delivered,
         Read
