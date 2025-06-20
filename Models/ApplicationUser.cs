@@ -1,10 +1,10 @@
 ﻿using Messanger.Enums;
+using Microsoft.AspNetCore.Identity;
 
 namespace Messanger.Models
 {
-    public class User
+    public class ApplicationUser : IdentityUser<int>
     {
-        public int Id { get; set; }
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public int Age { get; set; }

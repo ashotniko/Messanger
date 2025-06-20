@@ -21,7 +21,7 @@ namespace Messanger.Services
         /// </summary>
         /// <param name="createUserDto">User class with only nessesary parameters for creating</param>
         /// <returns>Returns creted user class</returns>
-        public async Task<User> CreateUser(CreateUserDto createUserDto)
+        public async Task<GetUserDto> CreateUser(CreateUserDto createUserDto)
         {
             if (createUserDto == null) throw new ArgumentNullException(nameof(createUserDto), "CreateUserDto cannot be null.");
 
@@ -30,7 +30,7 @@ namespace Messanger.Services
             await _context.Users.AddAsync(newUser);
             await _context.SaveChangesAsync();
 
-            return newUser;
+            return newUser.ToDtoFromUser();
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace Messanger.Services
         public async Task<IEnumerable<GetUserDto>> GetAllUsers()
         {
             var users = _context.Users
-                .Select(u => u.GetUserDto());
+                .Select(u => u.ToDtoFromUser());
 
             return await users.ToListAsync();
         }
@@ -86,10 +86,10 @@ namespace Messanger.Services
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
             if (user == null) throw new KeyNotFoundException($"User with id {id} not found.");
 
-            return user.GetUserDto();
+            return user.ToDtoFromUser();
         }
 
-        private static void EditUserHelper(User user, EditUserDto editUserDto)
+        private static void EditUserHelper(ApplicationUser user, EditUserDto editUserDto)
         {
             if (!string.IsNullOrWhiteSpace(editUserDto.FirstName))
             {

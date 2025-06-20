@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Messanger.Controllers
 {
+    [Authorize(Policy = "UserPolicy")]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase

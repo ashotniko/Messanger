@@ -6,12 +6,14 @@ namespace Messanger.Mappers
 {
     public static class MessageMapper
     {
-        public static Message ToMessageFromDto(CreateMessageForSingleUserDto dto)
+        public static Message ToMessageFromDto(CreateMessageForSingleUserDto dto, int senderId, int receiverID)
         {
             return new Message
             {
                 Content = dto.Content,
                 State = MessageState.Created,
+                SenderId = senderId,
+                ReceiverId = receiverID,
             };
         }
 
@@ -19,10 +21,11 @@ namespace Messanger.Mappers
         {
             return new GetMessageForSingelUserDto
             {
+                Id = message.Id,
                 Content = message.Content,
                 State = message.State,
-                Sender = message.Sender.GetUserDto(),
-                Receiver = message.Receiver.GetUserDto()
+                Sender = message.Sender.ToDtoFromUser(),
+                Receiver = message.Receiver.ToDtoFromUser(),
             };
         }
     }

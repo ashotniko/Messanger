@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Messanger.Controllers
 {
+    [Authorize(Policy = "UserPolicy")]
     [Route("api/[controller]")]
     [ApiController]
     public class MessageController : ControllerBase
@@ -18,8 +19,8 @@ namespace Messanger.Controllers
             _logger = logger;
         }
 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpGet]
-        [AllowAnonymous]
         public async Task<ActionResult> GetAllMessages()
         {
             try
@@ -56,11 +57,12 @@ namespace Messanger.Controllers
         public async Task<IActionResult> CreateMessage(
             [FromRoute] int senderId,
             [FromRoute] int receiverId,
-            [FromBody] CreateMessageForSingleUserDto createMessageDto)
+            [FromBody] CreateMessageForSingleUserDto createMessageDto,
+            CancellationToken ct = default)
         {
             try
             {
-                var message = await _messageService.CreateMessageAsync(senderId, receiverId, createMessageDto);
+                var message = await _messageService.CreateMessageAsync(senderId, receiverId, createMessageDto, ct);
                 _logger.LogInformation($"Created message with id {message.Id}.");
                 return CreatedAtAction(
                     nameof(GetMessageById),

@@ -6,9 +6,9 @@ namespace Messanger.Mappers
 {
     public static class UserMapper
     {
-        public static User ToUserFromCreteUserDto(CreateUserDto createUserDto)
+        public static ApplicationUser ToUserFromCreteUserDto(CreateUserDto createUserDto)
         {
-            return new User
+            return new ApplicationUser
             {
                 FirstName = createUserDto.FirstName,
                 LastName = createUserDto.LastName,
@@ -18,7 +18,7 @@ namespace Messanger.Mappers
             };
         }
 
-        public static GetUserDto GetUserDto(this User user)
+        public static GetUserDto ToDtoFromUser(this ApplicationUser user)
         {
             return new GetUserDto
             {
@@ -28,6 +28,24 @@ namespace Messanger.Mappers
                 Age = user.Age,
                 Activity = user.Activity,
                 LastSeen = user.LastSeen
+            };
+        }
+
+        public static GetUserSentMessagesDto ToGetUserSentMessagesDtoFromUser(this ApplicationUser user)
+        {
+            return new GetUserSentMessagesDto
+            {
+                Id = user.Id,
+                SentMessages = user.SentMessages ?? new List<Message>()
+            };
+        }
+
+        public static GetUserReceivedMessagesDto ToGetUserReceivedMessagesDtoFromUser(this ApplicationUser user)
+        {
+            return new GetUserReceivedMessagesDto
+            {
+                Id = user.Id,
+                ReceivedMessages = user.ReceivedMessages ?? new List<Message>()
             };
         }
     }

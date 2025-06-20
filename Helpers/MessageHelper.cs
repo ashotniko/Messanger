@@ -1,5 +1,7 @@
 ﻿using Messanger.Data;
+using Messanger.Dtos.UserDto;
 using Messanger.Interfaces;
+using Messanger.Mappers;
 using Messanger.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -37,5 +39,24 @@ namespace Messanger.Helpers
             return message;
         }
 
+        public async Task<GetUserSentMessagesDto> GetUsersSentMessages(int userId)
+        {
+            var user = await _context.Users
+                .Include(u => u.SentMessages)
+                .FirstOrDefaultAsync(u => u.Id == userId)
+                ?? throw new KeyNotFoundException($"User {userId} not found.");
+
+            return user.ToGetUserSentMessagesDtoFromUser();
+        }
+
+        public async Task<GetUserReceivedMessagesDto> GetUsersReceivedMessages(int userId)
+        {
+            var user = await _context.Users
+                .Include(u => u.SentMessages)
+                .FirstOrDefaultAsync(u => u.Id == userId)
+                ?? throw new KeyNotFoundException($"User {userId} not found.");
+
+            return user.ToGetUserReceivedMessagesDtoFromUser();
+        }
     }
 }

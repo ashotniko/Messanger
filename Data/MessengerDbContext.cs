@@ -1,12 +1,15 @@
 ﻿using Messanger.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Messanger.Data
 {
-    public class MessengerDbContext : DbContext
+    public class MessengerDbContext : IdentityDbContext<ApplicationUser, IdentityRole<int>, int>
     {
-        public MessengerDbContext(DbContextOptions<MessengerDbContext> options) : base(options) { }
-        public DbSet<User> Users { get; set; }
+        public MessengerDbContext(DbContextOptions<MessengerDbContext> options)
+            : base(options) { }
+
         public DbSet<Group> Groups { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<UserGroup> UserGroups { get; set; }
@@ -15,6 +18,9 @@ namespace Messanger.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ApplicationUser>()
+            .ToTable("Users");
 
             // Many-to-Many: User ↔ Group
             modelBuilder.Entity<UserGroup>()

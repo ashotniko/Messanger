@@ -25,9 +25,13 @@
 //            _messageHelper = messageHelper;
 //        }
 
-//        public async Task<Message> SendToSingleUserAsync(CreateMessageForSingleUserDto dto, CancellationToken ct = default)
+//        public async Task<Message> SendToSingleUserAsync(
+//            int senderId,
+//            int receiverId,
+//            CreateMessageForSingleUserDto dto,
+//            CancellationToken ct = default)
 //        {
-//            var savedMessage = await _messageService.CreateMessageAsync(dto);
+//            var savedMessage = await _messageService.CreateMessageAsync(senderId, receiverId, dto, ct);
 //            var message = await _messageHelper.GetMessageById(savedMessage.Id);
 
 //            message.State = MessageState.Sent;
