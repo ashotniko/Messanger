@@ -4,7 +4,8 @@ namespace Messanger.Interfaces
 {
     public interface IMessageHelper
     {
-        public Task<IEnumerable<Message>> GetAllMessages();
-        public Task<Message> GetMessageById(int messageId);
+        Task<Message?> GetMessageById(int messageId);
+        Task<int?> GetSenderIdByMessageId(int messageId);
+        Task<int?> GetReceiverIdByMessageId(int messageId);
     }
 }

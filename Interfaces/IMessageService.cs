@@ -4,10 +4,11 @@ namespace Messanger.Interfaces
 {
     public interface IMessageService
     {
-        public Task<IEnumerable<GetMessageForSingelUserDto>> GetAllMessages();
-        public Task<GetMessageForSingelUserDto> GetMessageById(int messageId);
-        public Task EditMessage(int id, EditMessageForSingleUserDto editMessageDto);
-        public Task<GetMessageForSingelUserDto> CreateMessageAsync(int senderId, int receiverId, CreateMessageForSingleUserDto createMessageDto, CancellationToken ct = default);
-        public Task DeleteMessage(int id);
+        Task<IEnumerable<GetMessageForSingelUserDto>> GetAllMessages();
+        Task<GetMessageForSingelUserDto> GetMessageById(int messageId);
+        Task<IEnumerable<GetMessageForSingelUserDto>> GetAllMessagesForUser(int userId);
+        Task EditMessage(int id, EditMessageForSingleUserDto editMessageDto);
+        Task<GetMessageForSingelUserDto> CreateMessageAsync(int senderId, int receiverId, CreateMessageForSingleUserDto createMessageDto, CancellationToken ct = default);
+        Task DeleteMessage(int id);
     }
 }

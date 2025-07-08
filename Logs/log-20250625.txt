@@ -1,0 +1,65 @@
+[2025-06-25 12:15:21 INF] Retrieved 5 users from the database.
+[2025-06-25 12:15:21 INF] HTTP GET /api/User responded 200 in 3736.2608 ms
+[2025-06-25 12:39:52 INF] HTTP POST /api/User responded 401 in 66.3147 ms
+[2025-06-25 12:40:55 ERR] System.Collections.Generic.List`1[Microsoft.AspNetCore.Identity.IdentityError]
+[2025-06-25 12:40:55 INF] HTTP POST /api/Account/register responded 400 in 2648.5733 ms
+[2025-06-25 12:41:41 ERR] System.Collections.Generic.List`1[Microsoft.AspNetCore.Identity.IdentityError]
+[2025-06-25 12:41:41 INF] HTTP POST /api/Account/register responded 400 in 2054.8067 ms
+[2025-06-25 12:42:10 INF] HTTP POST /api/Account/register responded 200 in 2531.4091 ms
+[2025-06-25 12:43:07 INF] HTTP POST /api/Account/login responded 200 in 164.2688 ms
+[2025-06-25 12:43:28 INF] HTTP POST /api/User responded 403 in 110.6695 ms
+[2025-06-25 12:43:39 INF] HTTP POST /api/User responded 403 in 2.9882 ms
+[2025-06-25 12:43:56 INF] HTTP POST /api/User responded 403 in 0.6881 ms
+[2025-06-25 12:44:12 INF] HTTP POST /api/User responded 403 in 0.4015 ms
+[2025-06-25 12:44:40 INF] Retrieved 6 users from the database.
+[2025-06-25 12:44:40 INF] HTTP GET /api/User responded 200 in 2931.8091 ms
+[2025-06-25 12:45:08 INF] HTTP POST /api/User responded 403 in 1.4887 ms
+[2025-06-25 12:52:51 INF] HTTP POST /api/User responded 403 in 4.8465 ms
+[2025-06-25 13:31:10 INF] HTTP POST /api/Account/login responded 200 in 423.8868 ms
+[2025-06-25 13:31:46 INF] Created user with id 7.
+[2025-06-25 13:31:46 INF] HTTP POST /api/User responded 201 in 10683.7082 ms
+[2025-06-25 13:41:48 INF] HTTP POST /api/Account/login responded 200 in 426.2200 ms
+[2025-06-25 13:42:34 WRN] User with id 6 attempted to delete user with id 7 without permission.
+[2025-06-25 13:42:39 ERR] HTTP DELETE /api/User/7 responded 500 in 22729.7145 ms
+System.InvalidOperationException: No authentication handler is registered for the scheme 'You do not have permission to delete this user.'. The registered schemes are: Identity.Application, Identity.External, Identity.TwoFactorRememberMe, Identity.TwoFactorUserId, Bearer. Did you forget to call AddAuthentication().Add[SomeAuthHandler]("You do not have permission to delete this user.",...)?
+   at Microsoft.AspNetCore.Authentication.AuthenticationService.ForbidAsync(HttpContext context, String scheme, AuthenticationProperties properties)
+   at Microsoft.AspNetCore.Mvc.ForbidResult.ExecuteResultAsync(ActionContext context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeResultAsync>g__Logged|22_0(ResourceInvoker invoker, IActionResult result)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+[2025-06-25 13:42:39 ERR] An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: No authentication handler is registered for the scheme 'You do not have permission to delete this user.'. The registered schemes are: Identity.Application, Identity.External, Identity.TwoFactorRememberMe, Identity.TwoFactorUserId, Bearer. Did you forget to call AddAuthentication().Add[SomeAuthHandler]("You do not have permission to delete this user.",...)?
+   at Microsoft.AspNetCore.Authentication.AuthenticationService.ForbidAsync(HttpContext context, String scheme, AuthenticationProperties properties)
+   at Microsoft.AspNetCore.Mvc.ForbidResult.ExecuteResultAsync(ActionContext context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeResultAsync>g__Logged|22_0(ResourceInvoker invoker, IActionResult result)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+[2025-06-25 13:47:15 INF] HTTP DELETE /api/User/7 responded 401 in 163.3852 ms
+[2025-06-25 13:47:43 WRN] User with id 6 attempted to delete user with id 7 without permission.
+[2025-06-25 13:47:51 INF] HTTP DELETE /api/User/7 responded 403 in 15725.0602 ms
+[2025-06-25 13:55:16 INF] HTTP GET /api/Message responded 403 in 132.8731 ms
+[2025-06-25 13:55:59 INF] Retrieved message with id 2 from the database.
+[2025-06-25 13:55:59 INF] HTTP GET /api/Message/2 responded 200 in 32392.3858 ms
+[2025-06-25 13:56:49 INF] Retrieved message with id 2 from the database.
+[2025-06-25 13:56:49 INF] HTTP GET /api/Message/2 responded 200 in 25267.7553 ms

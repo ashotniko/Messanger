@@ -11,7 +11,7 @@ namespace Messanger.Models
         public UserActivity Activity { get; set; } = UserActivity.Online;
         public DateTime LastSeen { get; set; } // TODO: Use LastSeen only if Activity is Offline
 
-        public ICollection<UserGroup>? UserGroups { get; set; }
+        public ICollection<UserGroup> UserGroups { get; set; } = [];
         public ICollection<Message>? ReceivedMessages { get; set; }
         public ICollection<Message>? SentMessages { get; set; }
     }

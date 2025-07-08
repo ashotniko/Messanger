@@ -17,7 +17,7 @@ namespace Messanger.Dtos.UserDto
 
         public override string ToString()
         {
-            return $"{FirstName} {LastName}, Age: {Age}";
+            return $"{this.FirstName} {this.LastName}, Age: {this.Age}";
         }
     }
 }

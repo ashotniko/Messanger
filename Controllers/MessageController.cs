@@ -1,4 +1,6 @@
-﻿using Messanger.Dtos.MessageDto.SingleUser;
+﻿using Messanger.Data;
+using Messanger.Dtos.MessageDto.SingleUser;
+using Messanger.Helpers;
 using Messanger.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,13 +12,22 @@ namespace Messanger.Controllers
     [ApiController]
     public class MessageController : ControllerBase
     {
-        private readonly IMessageService _messageService;
-        private readonly ILogger<MessageController> _logger;
+        private readonly IMessageService messageService;
+        private readonly IMessageHelper messageHelper;
+        private readonly MessengerDbContext context;
+        private readonly ILogger<MessageController> logger;
 
-        public MessageController(IMessageService messageService, ILogger<MessageController> logger)
+        public MessageController(
+            IMessageService messageService,
+            IMessageHelper messageHelper,
+            MessengerDbContext context,
+            ILogger<MessageController> logger
+            )
         {
-            _messageService = messageService;
-            _logger = logger;
+            this.messageService = messageService;
+            this.messageHelper = messageHelper;
+            this.context = context;
+            this.logger = logger;
         }
 
         [Authorize(Policy = "AdminPolicy")]
@@ -25,31 +36,68 @@ namespace Messanger.Controllers
         {
             try
             {
-                var messages = await _messageService.GetAllMessages();
-                _logger.LogInformation($"Retrieved {messages.Count()} messages from the database.");
-                return Ok(messages);
+                var messages = await this.messageService.GetAllMessages();
+                this.logger.LogInformation($"Retrieved {messages.Count()} messages from the database.");
+                return this.Ok(messages);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while retrieving messages.");
-                return StatusCode(500, "Internal server error");
+                this.logger.LogError(ex, "An error occurred while retrieving messages.");
+                return this.StatusCode(500, "Internal server error");
             }
         }
 
         [HttpGet("{id:int}")]
-        [AllowAnonymous]
         public async Task<ActionResult> GetMessageById([FromRoute] int id)
         {
             try
             {
-                var message = await _messageService.GetMessageById(id);
-                _logger.LogInformation($"Retrieved message with id {id} from the database.");
-                return Ok(message);
+                var message = await this.messageService.GetMessageById(id);
+                var senderId = await this.messageHelper.GetSenderIdByMessageId(id);
+                var receiverId = await this.messageHelper.GetReceiverIdByMessageId(id);
+
+                if (UserIdentifierHelper.IsSenderReceiverOrAdmin(this.User, senderId, receiverId))
+                {
+                    this.logger.LogInformation($"Retrieved message with id {id} from the database.");
+                    return this.Ok(message);
+                }
+
+                this.logger.LogWarning($"You cannot view messages for user with id {id} without permission.");
+                return this.Forbid();
             }
             catch (ArgumentNullException ex)
             {
-                _logger.LogWarning(ex.Message);
-                return NotFound(ex.Message);
+                this.logger.LogWarning(ex.Message);
+                return this.NotFound(ex.Message);
+            }
+        }
+
+        [HttpGet("user/{userId:int}")]
+        public async Task<ActionResult> GetMessagesByUserId([FromRoute] int userId)
+        {
+            try
+            {
+                if (UserIdentifierHelper.IsSelfOrAdmin(this.User, userId))
+                {
+                    var messages = await this.messageService.GetAllMessagesForUser(userId);
+                    if (messages.Count() == 0)
+                    {
+                        this.logger.LogInformation($"No messages found for user with id {userId}.");
+                        return this.NotFound($"No messages found for user with id {userId}.");
+                    }
+                    this.logger.LogInformation($"Retrieved {messages.Count()} messages for user with id {userId}.");
+                    return this.Ok(messages);
+                }
+                else
+                {
+                    this.logger.LogWarning($"You cannot view messages for user with id {userId} without permission.");
+                    return this.Forbid();
+                }
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex.Message);
+                return this.NotFound(ex.Message);
             }
         }
 
@@ -62,23 +110,31 @@ namespace Messanger.Controllers
         {
             try
             {
-                var message = await _messageService.CreateMessageAsync(senderId, receiverId, createMessageDto, ct);
-                _logger.LogInformation($"Created message with id {message.Id}.");
-                return CreatedAtAction(
-                    nameof(GetMessageById),
-                    new { id = message.Id },
-                    message
-                );
+                if (UserIdentifierHelper.IsSelfOrAdmin(this.User, senderId))
+                {
+                    var message = await this.messageService.CreateMessageAsync(senderId, receiverId, createMessageDto, ct);
+                    this.logger.LogInformation($"Created message with id {message.Id}.");
+                    return this.CreatedAtAction(
+                        nameof(GetMessageById),
+                        new { id = message.Id },
+                        message
+                    );
+                }
+                else
+                {
+                    this.logger.LogWarning($"You cannot create messages for user with id {senderId} without permission.");
+                    return this.Forbid();
+                }
             }
             catch (ArgumentException ex)
             {
-                _logger.LogWarning(ex.Message);
-                return Conflict(ex.Message);
+                this.logger.LogWarning(ex.Message);
+                return this.Conflict(ex.Message);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
-                return BadRequest(ex.Message);
+                this.logger.LogError(ex.Message);
+                return this.BadRequest(ex.Message);
             }
         }
 
@@ -87,19 +143,29 @@ namespace Messanger.Controllers
         {
             try
             {
-                await _messageService.EditMessage(id, editMessageDto);
-                _logger.LogInformation($"Edited message with id {id}.");
-                return NoContent();
+                var senderId = await this.messageHelper.GetSenderIdByMessageId(id);
+
+                if (UserIdentifierHelper.IsSelfOrAdmin(this.User, senderId))
+                {
+                    await this.messageService.EditMessage(id, editMessageDto);
+                    this.logger.LogInformation($"Edited message with id {id}.");
+                    return this.NoContent();
+                }
+                else
+                {
+                    this.logger.LogWarning($"You cannot edit messages for user with id {senderId} without permission.");
+                    return this.Forbid();
+                }
             }
             catch (ArgumentNullException ex)
             {
-                _logger.LogWarning(ex.Message);
-                return NotFound(ex.Message);
+                this.logger.LogWarning(ex.Message);
+                return this.NotFound(ex.Message);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
-                return BadRequest(ex.Message);
+                this.logger.LogError(ex.Message);
+                return this.BadRequest(ex.Message);
             }
         }
 
@@ -108,19 +174,30 @@ namespace Messanger.Controllers
         {
             try
             {
-                await _messageService.DeleteMessage(id);
-                _logger.LogInformation($"Deleted message with id {id}.");
-                return NoContent();
+                var senderId = await this.messageHelper.GetSenderIdByMessageId(id);
+                var receiverId = await this.messageHelper.GetReceiverIdByMessageId(id);
+
+                if (UserIdentifierHelper.IsSenderReceiverOrAdmin(this.User, senderId, receiverId))
+                {
+                    await this.messageService.DeleteMessage(id);
+                    this.logger.LogInformation($"Deleted message with id {id}.");
+                    return this.NoContent();
+                }
+                else
+                {
+                    this.logger.LogWarning($"You cannot delete messages without permission.");
+                    return this.Forbid();
+                }
             }
             catch (ArgumentNullException ex)
             {
-                _logger.LogWarning(ex.Message);
-                return NotFound(ex.Message);
+                this.logger.LogWarning(ex.Message);
+                return this.NotFound(ex.Message);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
-                return BadRequest(ex.Message);
+                this.logger.LogError(ex.Message);
+                return this.BadRequest(ex.Message);
             }
         }
     }

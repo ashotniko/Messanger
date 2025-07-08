@@ -1,4 +1,5 @@
 ﻿using Messanger.Dtos.UserDto;
+using Messanger.Helpers;
 using Messanger.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,56 +11,57 @@ namespace Messanger.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IUserService _userService;
-        private readonly ILogger<UserController> _logger;
+        private readonly IUserService userService;
+        private readonly ILogger<UserController> logger;
         public UserController(IUserService userService, ILogger<UserController> logger)
         {
-            _logger = logger;
-            _userService = userService;
+            this.logger = logger;
+            this.userService = userService;
         }
 
-        [HttpGet]
         [AllowAnonymous]
+        [HttpGet]
         public async Task<ActionResult> GetAllUsers()
         {
             try
             {
-                var users = await _userService.GetAllUsers();
-                _logger.LogInformation($"Retrieved {users.Count()} users from the database.");
-                return Ok(users);
+                var users = await this.userService.GetAllUsers();
+                this.logger.LogInformation($"Retrieved {users.Count()} users from the database.");
+                return this.Ok(users);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while retrieving users.");
-                return StatusCode(500, "Internal server error");
+                this.logger.LogError(ex, "An error occurred while retrieving users.");
+                return this.StatusCode(500, "Internal server error");
             }
         }
 
-        [HttpGet("{id:int}")]
         [AllowAnonymous]
+        [HttpGet("{id:int}")]
         public async Task<ActionResult> GetUserById([FromRoute] int id)
         {
             try
             {
-                var user = await _userService.GetUser(id);
-                _logger.LogInformation($"Retrieved user with id {id} from the database.");
-                return Ok(user);
+                var user = await this.userService.GetUser(id);
+                this.logger.LogInformation($"Retrieved user with id {id} from the database.");
+                return this.Ok(user);
             }
             catch (ArgumentNullException ex)
             {
-                _logger.LogWarning(ex.Message);
-                return NotFound(ex.Message);
+                this.logger.LogWarning(ex.Message);
+                return this.NotFound(ex.Message);
             }
         }
 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] CreateUserDto createUserDto)
         {
             try
             {
-                var user = await _userService.CreateUser(createUserDto);
-                _logger.LogInformation($"Created user with id {user.Id}.");
-                return CreatedAtAction(
+                var user = await this.userService.CreateUser(createUserDto);
+                this.logger.LogInformation($"Created user with id {user.Id}.");
+                return this.CreatedAtAction(
                     nameof(GetUserById),
                     new { id = user.Id },
                     user
@@ -67,13 +69,13 @@ namespace Messanger.Controllers
             }
             catch (ArgumentException ex)
             {
-                _logger.LogWarning(ex.Message);
-                return Conflict(ex.Message);
+                this.logger.LogWarning(ex.Message);
+                return this.Conflict(ex.Message);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
-                return BadRequest(ex.Message);
+                this.logger.LogError(ex.Message);
+                return this.BadRequest(ex.Message);
             }
         }
 
@@ -82,19 +84,26 @@ namespace Messanger.Controllers
         {
             try
             {
-                await _userService.EditUser(id, editUserDto);
-                _logger.LogInformation($"Edited user with id {id}.");
-                return NoContent();
+                if (UserIdentifierHelper.IsSelfOrAdmin(this.User, id))
+                {
+                    await this.userService.EditUser(id, editUserDto);
+                    this.logger.LogInformation($"Edited user with id {id}.");
+                    return this.NoContent();
+                }
+
+                this.logger.LogWarning($"You cannot edit user with id {id} without permission.");
+                return this.Forbid();
+
             }
             catch (ArgumentNullException ex)
             {
-                _logger.LogWarning(ex.Message);
-                return NotFound(ex.Message);
+                this.logger.LogWarning(ex.Message);
+                return this.NotFound(ex.Message);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
-                return BadRequest(ex.Message);
+                this.logger.LogError(ex.Message);
+                return this.BadRequest(ex.Message);
             }
         }
 
@@ -103,19 +112,25 @@ namespace Messanger.Controllers
         {
             try
             {
-                await _userService.DeleteUser(id);
-                _logger.LogInformation($"Deleted user with id {id}.");
-                return NoContent();
+                if (UserIdentifierHelper.IsSelfOrAdmin(this.User, id))
+                {
+                    await this.userService.DeleteUser(id);
+                    this.logger.LogInformation($"Deleted user with id {id}.");
+                    return this.NoContent();
+                }
+                this.logger.LogWarning($"You cannot delete user with id {id} without permission.");
+                return this.Forbid();
+
             }
             catch (ArgumentNullException ex)
             {
-                _logger.LogWarning(ex.Message);
-                return NotFound(ex.Message);
+                this.logger.LogWarning(ex.Message);
+                return this.NotFound(ex.Message);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
-                return BadRequest(ex.Message);
+                this.logger.LogError(ex.Message);
+                return this.BadRequest(ex.Message);
             }
         }
     }

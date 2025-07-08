@@ -13,7 +13,7 @@ namespace Messanger.Services
 
         public UserService(MessengerDbContext context)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            this._context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         /// <summary>
@@ -23,12 +23,15 @@ namespace Messanger.Services
         /// <returns>Returns creted user class</returns>
         public async Task<GetUserDto> CreateUser(CreateUserDto createUserDto)
         {
-            if (createUserDto == null) throw new ArgumentNullException(nameof(createUserDto), "CreateUserDto cannot be null.");
+            if (createUserDto == null)
+            {
+                throw new ArgumentNullException(nameof(createUserDto), "CreateUserDto cannot be null.");
+            }
 
             var newUser = UserMapper.ToUserFromCreteUserDto(createUserDto);
 
-            await _context.Users.AddAsync(newUser);
-            await _context.SaveChangesAsync();
+            await this._context.Users.AddAsync(newUser);
+            await this._context.SaveChangesAsync();
 
             return newUser.ToDtoFromUser();
         }
@@ -39,12 +42,15 @@ namespace Messanger.Services
         /// <param name="id">Unical identifier of user</param>
         public async Task DeleteUser(int id)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Id == id);
+            var user = this._context.Users.FirstOrDefault(u => u.Id == id);
 
-            if (user == null) throw new KeyNotFoundException($"User with id {id} not found.");
+            if (user == null)
+            {
+                throw new KeyNotFoundException($"User with id {id} not found.");
+            }
 
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
+            this._context.Users.Remove(user);
+            await this._context.SaveChangesAsync();
         }
 
         /// <summary>
@@ -54,14 +60,20 @@ namespace Messanger.Services
         /// <param name="editUserDto">Helper class where is only nessesary parameters for user</param>
         public async Task EditUser(int id, EditUserDto editUserDto)
         {
-            if (editUserDto == null) throw new ArgumentNullException(nameof(editUserDto), "EditUserDto cannot be null.");
+            if (editUserDto == null)
+            {
+                throw new ArgumentNullException(nameof(editUserDto), "EditUserDto cannot be null.");
+            }
 
-            var user = _context.Users.FirstOrDefault(u => u.Id == id);
-            if (user == null) throw new KeyNotFoundException($"User with id {id} not found.");
+            var user = this._context.Users.FirstOrDefault(u => u.Id == id);
+            if (user == null)
+            {
+                throw new KeyNotFoundException($"User with id {id} not found.");
+            }
 
             // Update user properties from editUserDto
             EditUserHelper(user, editUserDto);
-            await _context.SaveChangesAsync();
+            await this._context.SaveChangesAsync();
         }
 
         /// <summary>
@@ -70,7 +82,7 @@ namespace Messanger.Services
         /// <returns>Return list of User's</returns>
         public async Task<IEnumerable<GetUserDto>> GetAllUsers()
         {
-            var users = _context.Users
+            var users = this._context.Users
                 .Select(u => u.ToDtoFromUser());
 
             return await users.ToListAsync();
@@ -83,8 +95,11 @@ namespace Messanger.Services
         /// <returns>Return user</returns>
         public async Task<GetUserDto> GetUser(int id)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
-            if (user == null) throw new KeyNotFoundException($"User with id {id} not found.");
+            var user = await this._context.Users.FirstOrDefaultAsync(u => u.Id == id);
+            if (user == null)
+            {
+                throw new KeyNotFoundException($"User with id {id} not found.");
+            }
 
             return user.ToDtoFromUser();
         }

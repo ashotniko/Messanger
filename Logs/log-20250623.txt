@@ -1,0 +1,8 @@
+[2025-06-23 16:29:47 ERR] System.Collections.Generic.List`1[Microsoft.AspNetCore.Identity.IdentityError]
+[2025-06-23 16:29:47 INF] HTTP POST /api/Account/register responded 400 in 3518.7201 ms
+[2025-06-23 16:30:03 INF] Retrieved 3 users from the database.
+[2025-06-23 16:30:03 INF] HTTP GET /api/User responded 200 in 2494.5614 ms
+[2025-06-23 16:33:09 ERR] Role USER does not exist.
+[2025-06-23 16:33:09 INF] HTTP POST /api/Account/register responded 400 in 38471.6130 ms
+[2025-06-23 16:55:56 INF] HTTP POST /api/Account/register responded 200 in 11589.2860 ms
+[2025-06-23 16:56:50 INF] HTTP POST /api/Account/login responded 200 in 157.5320 ms

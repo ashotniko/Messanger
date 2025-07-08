@@ -4,10 +4,10 @@ namespace Messanger.Interfaces
 {
     public interface IUserService
     {
-        public Task<IEnumerable<GetUserDto>> GetAllUsers();
-        public Task<GetUserDto> GetUser(int id);
-        public Task EditUser(int id, EditUserDto editUserDto);
-        public Task<GetUserDto> CreateUser(CreateUserDto createUserDto);
-        public Task DeleteUser(int id);
+        Task<IEnumerable<GetUserDto>> GetAllUsers();
+        Task<GetUserDto> GetUser(int id);
+        Task EditUser(int id, EditUserDto editUserDto);
+        Task<GetUserDto> CreateUser(CreateUserDto createUserDto);
+        Task DeleteUser(int id);
     }
 }
