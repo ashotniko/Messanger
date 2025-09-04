@@ -1,6 +1,6 @@
-﻿namespace Messanger.Interfaces;
+﻿//namespace Messanger.Interfaces;
 
-public interface IGroupService
-{
-    Task
-}
+//public interface IGroupService
+//{
+//    Task
+//}

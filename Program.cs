@@ -104,7 +104,7 @@ namespace Messanger
 
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = new SymmetricSecurityKey(
-                            System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigningKey"])
+                            System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigningKey"]!)
                         )
                     };
                 });
@@ -138,7 +138,6 @@ namespace Messanger
 
                 //app.MapHub<ChatHub>("/chatHub");  
                 app.MapControllers();
-                // Program.cs  (add just *before* app.Run();)
 
                 await app.Services.SeedRolesAsync();
                 await app.Services.SeedAdminAsync(builder.Configuration);
